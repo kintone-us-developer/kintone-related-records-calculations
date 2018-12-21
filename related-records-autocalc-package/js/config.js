@@ -142,19 +142,25 @@
                 this.computation.calcFuncField = "";
             }
 
-            // Error check RAField
-            if (this.relatedAppDisplayFields) {
-                if (this.errorsInField(this.relatedAppDisplayFields, this.computation.relatedAppTargetField)) {
+            /*
+            *   Todo: Fix error checking for RAField (this.copmutation.relatedAppTargetField)
+            */
+            // // Error check RAField
+            // if (this.relatedAppDisplayFields) {
+            //     if (this.errorsInField(this.relatedAppDisplayFields, this.computation.relatedAppTargetField)) {
 
-                    // Save RAField value and CFField value
-                    this.errorPreviousSelections.RAField = this.computation.relatedAppTargetField;
-                    this.errorPreviousSelections.CFField = this.computation.calcFuncField;
+            //         console.log(this.relatedAppDisplayFields);
+            //         console.log(this.computation.relatedAppTargetField);
 
-                    // Clear previously saved RAField entry selection in compuation
-                    this.computation.relatedAppTargetField = "";
-                    this.computation.calcFuncField = "";
-                }
-            }
+                    // // Save RAField value and CFField value
+                    // this.errorPreviousSelections.RAField = this.computation.relatedAppTargetField;
+                    // this.errorPreviousSelections.CFField = this.computation.calcFuncField;
+
+                    // // Clear previously saved RAField entry selection in compuation
+                    // this.computation.relatedAppTargetField = "";
+                    // this.computation.calcFuncField = "";
+            //     }
+            // }
             
             // Error check OField
             if (this.errorsInField(this.outputFields, this.computation.outputField)) {
@@ -309,7 +315,10 @@
             handleAddComputation: function(index) {
                 let before = this.computations.slice(0, index + 1);
                 let after = this.computations.slice(index + 1, this.computations.length);
+
                 this.computations = [...before, {
+                    
+                    // These are the variables in the computation object, they represent saved entrySelections
                     "displayAppRRField": "", 
                     "relatedAppId":"", 
                     "relatedAppTargetField": "",
@@ -365,5 +374,15 @@
             </div>
         `
     });
+
+    /*
+    *   Because the names of fields in the copmutation are confusing I decided to rename them in all but the root component.
+    *   
+    *   So here is what I unoffically renamed them:
+    *   displayAppRRField = RRField
+    *   relatedAppTargetField = RAField
+    *   calcFuncField = CFField
+    *   outputField = OField
+    */
 
 })(kintone.$PLUGIN_ID);
