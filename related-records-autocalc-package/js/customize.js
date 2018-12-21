@@ -94,7 +94,7 @@
         return isEven ? (numbers[middle] + numbers[middle - 1]) / 2 : numbers[middle];
     }
     
-    function countUniques (array) {
+    function countUniques(array) {
         return array.reduce(function(acc, curr) { // needs testing
             if (acc.indexOf(curr) === -1) {
                 return acc.concat(curr);
@@ -102,8 +102,8 @@
             return acc;
         }, []).length;
     }
-
-    function countNonemptyValues (acc, curr) { // is 0 an empty value? no
+    
+    function countNonemptyValues(acc, curr) { // is 0 an empty value? no
         return array.reduce(function(acc, curr) { // needs testing on dates
             if (curr !== "") {
                 return acc.concat(curr);

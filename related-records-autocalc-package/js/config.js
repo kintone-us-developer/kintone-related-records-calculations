@@ -1,12 +1,10 @@
 (function(PLUGIN_ID) {
     "use strict";
-    
     var CONFIG = kintone.plugin.app.getConfig(PLUGIN_ID);
     console.log('getConfig is ', CONFIG);
 
     // TODO: pass CONFIG into <select> options to prepopulate
     // before making API call to update any field changes
-
     // kintone.plugin.app.setConfig({});
 
     let previouslySavedComputations = window["myFunctions"].rehydrateComputations(CONFIG);
@@ -40,19 +38,25 @@
         },
         methods: {
             handleChange: function() {
-                this.$emit("relatedRecordsFieldSelected", this.selected)
+                this.$emit("relatedRecordsFieldSelected", this.selected);
             }
         },
         template: `
             <div>
                 Pick a related records field
-                <select v-model="selected" @change="handleChange">
-                    <option disabled value="Select a field">Select a field</option>
-                    <option v-for="record in relatedRecords" v-bind:value="record" :key="record.code">
-                        {{record.label}} ({{record.code}})
-                    </option>
-                </select>
-                <span>Selected: {{this.displayAppRRField.code}}</span>
+
+                <div class="kintoneplugin-select-outer">
+                    <div class="kintoneplugin-select">
+                        <select v-model="selected" @change="handleChange">
+                            <option disabled value="Select a field">Select a field</option>
+                            <option v-for="record in relatedRecords" v-bind:value="record" :key="record.code">
+                                {{record.label}} ({{record.code}})
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <span class="kintoneplugin-row">Selected: {{this.displayAppRRField.code}}</span>
             </div>
         `,
         props: ["relatedRecords", "displayAppRRField"]
@@ -72,13 +76,18 @@
         template: `
             <div>
                 Pick a field from the related app to calculate.
-                <select v-model="selected" @change="handleChange">
-                    <option disabled value="Select a field">Select a field</option>
-                    <option v-for="value in relatedAppDisplayFields" v-bind:value="value" :key="value.code">
-                    {{value.label}} ({{value.code}})
-                    </option>
-                </select>
-                <span>Selected: {{this.relatedAppTargetField.code}}</span>
+
+                <div class="kintoneplugin-select-outer">
+                    <div class="kintoneplugin-select">
+                        <select v-model="selected" @change="handleChange">
+                            <option disabled value="Select a field">Select a field</option>
+                            <option v-for="value in relatedAppDisplayFields" v-bind:value="value" :key="value.code">
+                            {{value.label}} ({{value.code}})
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <span class="kintoneplugin-row">Selected: {{this.relatedAppTargetField.code}}</span>
             </div>
         `,
         props: ["relatedAppDisplayFields", "relatedAppTargetField"]
@@ -108,13 +117,18 @@
         template: `
             <div>
                 Pick a field from the display app to output the computation.
-                <select v-model="selected" @change="handleChange">
-                    <option disabled value="Select a field">Select a field</option>
-                    <option v-for="value in outputFields" v-bind:value="value" :key="value.code">
-                    {{value.label}} ({{value.code}})
-                    </option>
-                </select>
-                <span>Selected: {{this.outputField.code}}</span>
+
+                <div class="kintoneplugin-select-outer">
+                    <div class="kintoneplugin-select">
+                        <select v-model="selected" @change="handleChange">
+                            <option disabled value="Select a field">Select a field</option>
+                            <option v-for="value in outputFields" v-bind:value="value" :key="value.code">
+                            {{value.label}} ({{value.code}})
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <span class="kintoneplugin-row">Selected: {{this.outputField.code}}</span>
             </div>
         `,
         props: ["outputFields", "outputField"]
@@ -134,13 +148,18 @@
         template: `
             <div>
                 Pick a calculation to use on the target related records field.
-                <select v-model="selected" @change="handleChange">
-                    <option disabled value="Select a field">Select a field</option>
-                    <option v-for="value in calcFuncFields" v-bind:value="value" :key="value.fn">
-                    {{value.name}}
-                    </option>
-                </select>
-                <span>Selected: {{this.calcFuncField.name}}</span>
+
+                <div class="kintoneplugin-select-outer">
+                    <div class="kintoneplugin-select">
+                        <select v-model="selected" @change="handleChange">
+                            <option disabled value="Select a field">Select a field</option>
+                            <option v-for="value in calcFuncFields" v-bind:value="value" :key="value.fn">
+                            {{value.name}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <span class="kintoneplugin-row">Selected: {{this.calcFuncField.name}}</span>
             </div>
         `,
         props: ["calcFuncFields", "calcFuncField"]
@@ -149,26 +168,15 @@
     Vue.component("computation", {
         data: function() {
             return {
-<<<<<<< HEAD
                 "relatedAppDisplayFields": !!this.computation.displayAppRRField ? getRelatedAppDisplayFields(this.computation.displayAppRRField, this.relatedRecords) : "",
                 "calcFuncFields": !!this.computation.relatedAppTargetField ? getCalcFuncFields(this.computation.relatedAppTargetField, this.calcFunctions) : ""
             };
-=======
-                "relatedAppDisplayFields": !!this.computation.displayAppRRField ? window["myFunctions"].getRelatedAppDisplayFields(this.computation.displayAppRRField, this.relatedRecords) : "",
-                "calcFuncFields": !!this.computation.relatedAppTargetField ? window["myFunctions"].getCalcFuncFields(this.computation.relatedAppTargetField, this.calcFunctions) : "",
-            }
->>>>>>> ie11_support
         },
         methods: {
             handleRRSelection: function(selection) {
                 this.computation.displayAppRRField = selection;
-<<<<<<< HEAD
                 this.computation.relatedAppId = selection.referenceTable.relatedApp.app;
                 this.relatedAppDisplayFields = getRelatedAppDisplayFields(selection, this.relatedRecords);
-=======
-                this.computation.relatedAppId = selection.referenceTable.relatedApp.app,
-                this.relatedAppDisplayFields = window["myFunctions"].getRelatedAppDisplayFields(selection, this.relatedRecords);
->>>>>>> ie11_support
                 this.computation.relatedAppTargetField = "";
                 this.calcFuncFields = {};
                 this.computation.calcFuncField = "";
@@ -194,8 +202,8 @@
         },
         template: `
             <div>
-                <button @click="addNewComputation">+</button>
-                <button v-if="length > 1" @click="removeComputation">-</button>
+                <button class="kintoneplugin-button-mini" @click="addNewComputation">+</button>
+                <button class="kintoneplugin-button-mini" v-if="length > 1" @click="removeComputation">-</button>
                 <relatedRecordsSelect
                     v-bind:relatedRecords="relatedRecords"
                     v-bind:displayAppRRField="computation.displayAppRRField"
@@ -293,7 +301,8 @@
                 v-bind:outputFields="outputFields"
                 v-bind:relatedRecords="relatedRecords"
             ></computation>
-            <button @click="savePluginSettings">SAVE</button>
+            <br>
+            <button class="kintoneplugin-button-dialog-ok" @click="savePluginSettings">SAVE</button>
             </div>
         `
     });

@@ -140,7 +140,6 @@ let myFunctions = {
                 })
             })
 
-<<<<<<< HEAD
 function getFormFields (id) {
     // TODO: spinner while waiting
     return kintone.api(kintone.api.url("/k/v1/app/form/fields", true), "GET", {"app": id})
@@ -148,10 +147,6 @@ function getFormFields (id) {
             return resp.properties;
         }).catch(function(err) {
             console.log('getFormFields err', err);
-=======
-        }).catch(function (err) {
-            console.error('error in setConfigFields: ', err);
->>>>>>> ie11_support
         });
     },
     // Given a related record field, get the display app fields associated with that RR
