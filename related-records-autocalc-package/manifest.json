@@ -19,9 +19,6 @@
         "js": [
             "js/function-definitions.js",
             "js/customize.js"
-        ],
-        "css": [
-            "css/customize.css"
         ]
     },
     "mobile": {
