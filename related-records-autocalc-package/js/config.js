@@ -9,13 +9,13 @@
 
     // kintone.plugin.app.setConfig({});
 
-    let previouslySavedComputations = rehydrateComputations(CONFIG);
+    let previouslySavedComputations = window["myFunctions"].rehydrateComputations(CONFIG);
     console.log('previouslySavedComputations is ', previouslySavedComputations);
 
     var data = {
         "calcFunctions": {
-            "num": NUMCALCFUNCTIONS,
-            "text": TEXTCALCFUNCTIONS
+            "num": window["myFunctions"].NUMCALCFUNCTIONS,
+            "text": window["myFunctions"].TEXTCALCFUNCTIONS
         },
         "formFields": {},
         "relatedRecords": previouslySavedComputations.map(comp => comp.displayAppRRField) || [],
@@ -26,7 +26,7 @@
 
     console.log('data before setConfigFields is', setTimeout(() => data, 0));
 
-    setConfigFields(data);
+    window["myFunctions"].setConfigFields(data);
     // TODO: error check current data against saved data
 
     console.log('data after setConfigFields is ', data);
@@ -149,22 +149,33 @@
     Vue.component("computation", {
         data: function() {
             return {
+<<<<<<< HEAD
                 "relatedAppDisplayFields": !!this.computation.displayAppRRField ? getRelatedAppDisplayFields(this.computation.displayAppRRField, this.relatedRecords) : "",
                 "calcFuncFields": !!this.computation.relatedAppTargetField ? getCalcFuncFields(this.computation.relatedAppTargetField, this.calcFunctions) : ""
             };
+=======
+                "relatedAppDisplayFields": !!this.computation.displayAppRRField ? window["myFunctions"].getRelatedAppDisplayFields(this.computation.displayAppRRField, this.relatedRecords) : "",
+                "calcFuncFields": !!this.computation.relatedAppTargetField ? window["myFunctions"].getCalcFuncFields(this.computation.relatedAppTargetField, this.calcFunctions) : "",
+            }
+>>>>>>> ie11_support
         },
         methods: {
             handleRRSelection: function(selection) {
                 this.computation.displayAppRRField = selection;
+<<<<<<< HEAD
                 this.computation.relatedAppId = selection.referenceTable.relatedApp.app;
                 this.relatedAppDisplayFields = getRelatedAppDisplayFields(selection, this.relatedRecords);
+=======
+                this.computation.relatedAppId = selection.referenceTable.relatedApp.app,
+                this.relatedAppDisplayFields = window["myFunctions"].getRelatedAppDisplayFields(selection, this.relatedRecords);
+>>>>>>> ie11_support
                 this.computation.relatedAppTargetField = "";
                 this.calcFuncFields = {};
                 this.computation.calcFuncField = "";
             },
             handleRRFieldCodeSelection: function(selection) {
                 this.computation.relatedAppTargetField = selection;
-                this.calcFuncFields = getCalcFuncFields(selection, this.calcFunctions);
+                this.calcFuncFields = window["myFunctions"].getCalcFuncFields(selection, this.calcFunctions);
                 this.computation.calcFuncField = "";
             },
             handleOutputFieldCodeSelection: function(selection) {
@@ -240,10 +251,10 @@
                 let before = this.computations.slice(0, index + 1);
                 let after = this.computations.slice(index + 1, this.computations.length);
                 this.computations = [...before, {
-                    "displayAppRRField": "", 
-                    "relatedAppId":"", 
-                    "relatedAppTargetField": "", 
-                    "outputField": "", 
+                    "displayAppRRField": "",
+                    "relatedAppId":"",
+                    "relatedAppTargetField": "",
+                    "outputField": "",
                     "calcFuncField": "",
                     "id": this.count()
                 }, ...after];
@@ -255,7 +266,7 @@
             },
             savePluginSettings: function() {
                 try {
-                    passErrorHandler(this.computations);
+                    window["myFunctions"].passErrorHandler(this.computations);
                     let dehydratedConfig = this.computations.reduce(function(acc, computation, index) {
                         acc[index] = JSON.stringify(computation);
                         return acc;
