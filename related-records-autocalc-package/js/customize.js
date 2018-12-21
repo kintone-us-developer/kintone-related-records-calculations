@@ -140,9 +140,9 @@
         // "app.record.index.show", Not in API: 'app.record.index.show is not allowed to return "Thenable" object.'
         "app.record.index.edit.submit",
         "app.record.create.submit",
-        "mobile.app.record.create.submit",
         "app.record.edit.submit",
-        "mobile.app.record.edit.submit"
+        "mobile.app.record.edit.submit",
+        "mobile.app.record.create.submit"
     ], function(event) {
         const displayAppRecord = event.record;
 
@@ -209,13 +209,143 @@
         "app.record.index.edit.show"
     ],
     function(event) {
-    // Restricting the input of the output field
-    // do this for all allocated output fields
+
+        /* 
+            Update the output fields of this record to have the most up to date calculations.
+        */
+        const displayAppRecord = event.record;
+
+        kintone.api(kintone.api.url("/k/v1/app/form/fields", true), "GET", {"app": APPID})
+        .then(function(resp) {
+            // Promise.all for each computation
+            Promise.all(rehydratedConfig.map(function getRRValues (computation) {
+                let displayAppRRFieldCode = computation.displayAppRRField.code;
+                let relatedAppId = computation.relatedAppId;
+                let relatedAppTargetFieldCode = computation.relatedAppTargetField.code;
+                let outputFieldCode = computation.outputField.code;
+                let calcFunc = computation.calcFuncField;
+                
+                let relatedRecordsField = resp.properties[displayAppRRFieldCode];
+                
+                if (!relatedRecordsField) {
+                    throw new Error(`The related records field ${displayAppRRFieldCode} is not found.
+                    Please update plugin settings for Related Records Autocalc or your
+                    app may behave unpredictably.`)
+                } else if (!isRelatedAppTargetFieldDisplayed(relatedRecordsField, relatedAppTargetFieldCode)) {
+                    throw new Error(`The field ${relatedAppTargetFieldCode} inside the related records field ${displayAppRRFieldCode}is not found.
+                    Please update plugin settings for Related Records Autocalc or your
+                    app may behave unpredictably.`);
+                } else if (!displayAppRecord[outputFieldCode]) {
+                    throw new Error(`The field ${outputFieldCode} to output your related records
+                    calculations is not found. Please update plugin settings for Related Records Autocalc or your
+                    app may behave unpredictably.`)
+                }
+                
+                let queryFilterSubstring = createQuerySubstring(relatedRecordsField, displayAppRecord);
+
+                const initialRequestParams = {
+                    "fields": [relatedAppTargetFieldCode],
+                    "app": relatedAppId,
+                    "query": queryFilterSubstring,
+                    "totalCount": true
+                };
+                
+                // pass to config.js to prepopulate
+
+                fetchAllRecords(initialRequestParams, queryFilterSubstring, QUERYLIMIT)
+                .then(function(resp) {
+                    let targetFieldValues = resp.map(function(relatedAppRecord) {
+                        return relatedAppRecord[relatedAppTargetFieldCode]["value"];
+                    });
+                    
+                    // calculation runs here
+                    displayAppRecord[outputFieldCode]["value"] = calcFuncs[calcFunc.fn](targetFieldValues);
+                    return displayAppRecord[outputFieldCode]["value"];
+                })
+            }))
+            .then(function (resp) {
+                return event;
+            })
+            .catch(function(err) {
+                console.error("Promise chain error: ", err);
+            });
+        });
+
+        // disable all output fields in record
         rehydratedConfig.forEach(function(computation) {
             event.record[computation.outputField.code]["disabled"] = true;
         });
 
-    // Restrict editing field settings of related records field
+        // Restrict editing field settings of related records field
         return event;
+    });
+
+    kintone.events.on([
+        "app.record.index.show"
+    ],
+    function(event) {
+
+        let records = event.records;
+
+        for (var i = 0; i < records.length; i++) {
+            const displayAppRecord = records[i];
+
+            kintone.api(kintone.api.url("/k/v1/app/form/fields", true), "GET", {"app": APPID})
+            .then(function(resp) {
+                // Promise.all for each computation
+                Promise.all(rehydratedConfig.map(function getRRValues (computation) {
+                    console.log(computation);
+                    let displayAppRRFieldCode = computation.displayAppRRField.code;
+                    let relatedAppId = computation.relatedAppId;
+                    let relatedAppTargetFieldCode = computation.relatedAppTargetField.code;
+                    let outputFieldCode = computation.outputField.code;
+                    let calcFunc = computation.calcFuncField;
+                    
+                    let relatedRecordsField = resp.properties[displayAppRRFieldCode];
+                    
+                    if (!relatedRecordsField) {
+                        throw new Error(`The related records field ${displayAppRRFieldCode} is not found.
+                        Please update plugin settings for Related Records Autocalc or your
+                        app may behave unpredictably.`)
+                    } else if (!isRelatedAppTargetFieldDisplayed(relatedRecordsField, relatedAppTargetFieldCode)) {
+                        throw new Error(`The field ${relatedAppTargetFieldCode} inside the related records field ${displayAppRRFieldCode}is not found.
+                        Please update plugin settings for Related Records Autocalc or your
+                        app may behave unpredictably.`);
+                    } else if (!displayAppRecord[outputFieldCode]) {
+                        throw new Error(`The field ${outputFieldCode} to output your related records
+                        calculations is not found. Please update plugin settings for Related Records Autocalc or your
+                        app may behave unpredictably.`)
+                    }
+                    
+                    let queryFilterSubstring = createQuerySubstring(relatedRecordsField, displayAppRecord);
+
+                    const initialRequestParams = {
+                        "fields": [relatedAppTargetFieldCode],
+                        "app": relatedAppId,
+                        "query": queryFilterSubstring,
+                        "totalCount": true
+                    };
+                    
+                    // pass to config.js to prepopulate
+
+                    fetchAllRecords(initialRequestParams, queryFilterSubstring, QUERYLIMIT)
+                    .then(function(resp) {
+                        let targetFieldValues = resp.map(function(relatedAppRecord) {
+                            return relatedAppRecord[relatedAppTargetFieldCode]["value"];
+                        });
+                        
+                        // calculation runs here
+                        displayAppRecord[outputFieldCode]["value"] = calcFuncs[calcFunc.fn](targetFieldValues);
+                        return displayAppRecord[outputFieldCode]["value"];
+                    })
+                }))
+                .then(function (resp) {
+                    return event;
+                })
+                .catch(function(err) {
+                    console.error("Promise chain error: ", err);
+                });
+            });
+        }
     });
 })(kintone.$PLUGIN_ID);

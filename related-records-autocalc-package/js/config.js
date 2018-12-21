@@ -56,13 +56,17 @@
         template: `
             <div>
                 {{ dropdownTitle }}
-                <select v-model="selected" @change="handleChange">
-                    <option disabled value="">Select a field</option>
-                    <option v-for="entry in dropdownEntries" v-bind:value="entry">
-                        <span v-if="entry.code != null">{{entry.label}}:{{ entry.code }}</span>
-                        <span v-else>{{ entry.name }}</span>
-                    </option>
-                </select>
+                <div class="kintoneplugin-select-outer">
+                    <div class="kintoneplugin-select">
+                        <select v-model="selected" @change="handleChange">
+                            <option disabled value="">Select a field</option>
+                            <option v-for="entry in dropdownEntries" v-bind:value="entry">
+                                <span v-if="entry.code != null">{{entry.label}}:{{ entry.code }}</span>
+                                <span v-else>{{ entry.name }}</span>
+                            </option>
+                        </select>
+                    </div>
+                </div>
                 <span v-if="previouslySelected" style="color: red">
                     <span v-if="this.dropdownName === 'CFField'">
                         Previously Selected: {{ this.previouslySelected.name }} : {{ this.previouslySelected.fn }}
@@ -248,8 +252,8 @@
         },
         template: `
             <div>
-                <button @click="addNewComputation">+</button>
-                <button v-if="length > 1" @click="removeComputation">-</button>
+                <button class="kintoneplugin-button-mini" @click="addNewComputation">+</button>
+                <button class="kintoneplugin-button-mini" v-if="length > 1" @click="removeComputation">-</button>
                      
                 <optionSelectDropdown
                     dropdownName="RRField"
@@ -369,8 +373,8 @@
                     v-bind:outputFields="outputFields"
                     v-bind:relatedRecords="relatedRecords"
                 />
-                <button @click="savePluginSettings">Save</button>
-                <button @click="cancelPluginSettings">Cancel</button>
+                <button class="kintoneplugin-button-dialog-ok" @click="savePluginSettings">Save</button>
+                <button class="kintoneplugin-button-dialog-cancel" @click="cancelPluginSettings">Cancel</button>
             </div>
         `
     });
